@@ -318,6 +318,7 @@ class Detector3DTemplate(nn.Module):
         return recall_dict
 
     def load_params_from_file(self, filename, logger, to_cpu=False):
+        print(filename)
         if not os.path.isfile(filename):
             raise FileNotFoundError
 

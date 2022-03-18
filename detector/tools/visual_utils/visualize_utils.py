@@ -81,8 +81,8 @@ def visualize_pts(pts, fig=None, bgcolor=(1, 1, 1), fgcolor=(0.0, 0.0, 0.0),
                         #   colormap='gnuplot', scale_factor=1, figure=fig)
         rgba = np.zeros((pts.shape[0], 4), dtype=np.uint8)
         rgba[:, -1] = 255 # no transparency
-        rgba[:, :3] = pts[:, 5:8] * 255
-        print(rgba)
+        # rgba[:, :3] = pts[:, 5:8] * 255 #comment line for normal pointpillars
+        # print(rgba)
         pts = mlab.pipeline.scalar_scatter(pts[:, 0], pts[:, 1], pts[:, 2]) # plot the points
         pts.add_attribute(rgba, 'colors') # assign the colors to each point
         pts.data.point_data.set_active_scalars('colors')

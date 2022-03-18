@@ -1,6 +1,13 @@
+# from asyncio.windows_events import NULL
+from __future__ import nested_scopes
 from functools import partial
 
 import numpy as np
+#extra no truncation numpy
+np.set_printoptions(threshold=np.inf)
+#extra no truncation numpy
+
+import torch
 
 from ...utils import box_utils, common_utils
 
@@ -43,28 +50,35 @@ class DataProcessor(object):
     def transform_points_to_voxels(self, data_dict=None, config=None, voxel_generator=None):
         if data_dict is None:
             try:
-                from spconv.utils import VoxelGeneratorV2 as VoxelGenerator
+                from spconv.pytorch.utils import PointToVoxel as VoxelGenerator
             except:
                 from spconv.utils import VoxelGenerator
 
             voxel_generator = VoxelGenerator(
-                voxel_size=config.VOXEL_SIZE,
-                point_cloud_range=self.point_cloud_range,
-                max_num_points=config.MAX_POINTS_PER_VOXEL,
-                max_voxels=config.MAX_NUMBER_OF_VOXELS[self.mode]
+                vsize_xyz = config.VOXEL_SIZE,
+                coors_range_xyz = self.point_cloud_range,
+                num_point_features = 8,
+                max_num_voxels = config.MAX_NUMBER_OF_VOXELS[self.mode],
+                max_num_points_per_voxel = config.MAX_POINTS_PER_VOXEL,
+                device = torch.device("cpu:0")
             )
             grid_size = (self.point_cloud_range[3:6] - self.point_cloud_range[0:3]) / np.array(config.VOXEL_SIZE)
             self.grid_size = np.round(grid_size).astype(np.int64)
             self.voxel_size = config.VOXEL_SIZE
             return partial(self.transform_points_to_voxels, voxel_generator=voxel_generator)
 
-        points = data_dict['points']
-        voxel_output = voxel_generator.generate(points)
+       
+        points = torch.Tensor(data_dict['points'])
+        
+        voxel_output = voxel_generator.generate_voxel_with_id(points)
+
+        # print(np.array(voxel_output)[3])
+
         if isinstance(voxel_output, dict):
             voxels, coordinates, num_points = \
                 voxel_output['voxels'], voxel_output['coordinates'], voxel_output['num_points_per_voxel']
         else:
-            voxels, coordinates, num_points = voxel_output
+            voxels, coordinates, num_points = voxel_output[:3]
 
         if not data_dict['use_lead_xyz']:
             voxels = voxels[..., 3:]  # remove xyz in voxels(N, 3)

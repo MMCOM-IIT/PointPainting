@@ -1,6 +1,7 @@
 from functools import partial
 
 import spconv
+from spconv.pytorch import SparseModule
 import torch
 import torch.nn as nn
 
@@ -8,7 +9,7 @@ from ...utils import common_utils
 from .spconv_backbone import post_act_block
 
 
-class SparseBasicBlock(spconv.SparseModule):
+class SparseBasicBlock(SparseModule):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, indice_key=None, norm_fn=None):

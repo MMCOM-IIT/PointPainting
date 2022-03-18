@@ -17,7 +17,8 @@ from pcdet.utils import common_utils
 from train_utils.optimization import build_optimizer, build_scheduler
 from train_utils.train_utils import train_model
 
-
+#IN /home/mmcom/neural-nets/PointPainting/detector/pcdet/datasets/processor/data_processor.py
+#CHANGE transform_points_to_voxels-->VoxelGenerator-->num_point_features=4 when training PointPillars without painting
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
     parser.add_argument('--cfg_file', type=str, default=None, help='specify the config for training')
