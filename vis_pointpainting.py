@@ -1,10 +1,12 @@
 from curses import has_colors
 import open3d as o3d
 import numpy as np
-# np.set_printoptions(threshold=np.inf)
+import argparse
+parser = argparse.ArgumentParser(description='arg parser')
+parser.add_argument('--pcd_dir', type=str, default=None,required=True)
+args = parser.parse_args()
 import os 
-painted_npy = '000138.npy' #145 154
-painted_path = os.path.join(os.getcwd(),'detector/data/kitti/training/painted_lidar/', painted_npy)
+painted_path = args.pcd_dir
 painted_npy = np.load(painted_path)
 # print(painted_npy[:,5])
 pcd = o3d.geometry.PointCloud()
