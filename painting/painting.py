@@ -1,3 +1,4 @@
+from time import time
 import torch
 from torchvision import transforms
 import numpy as np
@@ -219,12 +220,13 @@ class Painter:
         augmented_lidar = self.create_cyclist(augmented_lidar)
 
         return augmented_lidar
-
+    import time
     def run(self):
         num_image = 7481
         for idx in tqdm(range(num_image)):
             sample_idx = "%06d" % idx
             # points: N * 4(x, y, z, r)
+            start_time = time()
             points = self.get_lidar(sample_idx)
             
             # get segmentation score from network
@@ -233,12 +235,14 @@ class Painter:
             # scores_from_cam: H * W * 4/5, each pixel have 4/5 scores(0: background, 1: bicycle, 2: car, 3: person, 4: rider)
 
             # get calibration data
-            calib_fromfile = self.get_calib_fromfile(sample_idx)
             
+            calib_fromfile = self.get_calib_fromfile(sample_idx)
+
             # paint the point clouds
             # points: N * 8
             points = self.augment_lidar_class_scores_both(scores_from_cam_r, scores_from_cam, points, calib_fromfile)
-            
+            stop_time = time()
+            print("painting time {}".format(stop_time-start_time))
             np.save(self.save_path + ("%06d.npy" % idx), points)
 
 if __name__ == '__main__':
